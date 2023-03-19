@@ -1,6 +1,7 @@
 library(tidyverse)
 library(modelr)
 library(lubridate)
+library(dplyr)
 
 economy_data = read_csv("Flights Price Prediction Dataset\\economy.csv", show_col_types = FALSE)
 business_data = read_csv("Flights Price Prediction Dataset\\business.csv", show_col_types = FALSE)
@@ -44,5 +45,22 @@ weekday_graph_business <- ggplot (data = business_data) +
   geom_point(mapping = aes (x = weekday, y = price))+
   geom_point(mapping = aes (x = weekday, y = median(price)),color="red")+
   geom_point(mapping = aes (x = weekday, y = mean(price)),color="gold2")
-
-
+  #Grouping dataset by weekday
+eco_grp_weekday = economy_data %>% group_by(weekday)  %>%
+  summarise(mean_price = mean(price),
+            median_price = median(price),
+            .groups = 'drop')
+bus_grp_weekday = business_data %>% group_by(weekday)  %>%
+  summarise(mean_price = mean(price),
+            median_price = median(price),
+            .groups = 'drop')
+    #Mean and median price in economy by weekday
+grp_economy <- ggplot (data = eco_grp_weekday) +
+  geom_point(mapping = aes (x = weekday, y = mean_price),color="blue")+
+  geom_point(mapping = aes (x = weekday, y = median_price),color="red")+
+  ylab("price")
+    #Mean and median price in business by weekday
+grp_business <- ggplot (data = bus_grp_weekday) +
+  geom_point(mapping = aes (x = weekday, y = mean_price),color="blue")+
+  geom_point(mapping = aes (x = weekday, y = median_price),color="red")+
+  ylab("price")
