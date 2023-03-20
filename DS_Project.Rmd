@@ -1,3 +1,10 @@
+---
+title: "DS_Project"
+output: pdf_document
+date: "2023-03-20"
+---
+
+```{r, include = TRUE, warning = FALSE, message = FALSE}
 library(tidyverse)
 library(modelr)
 library(lubridate)
@@ -10,6 +17,12 @@ business_data$time_taken = lubridate::hm(business_data$time_taken)
 head(economy_data)
 head(business_data)
 
+```
+
+##distribution with respect to departure time
+
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 #distribution with respect to departure time
 
 ggplot (data = economy_data) +
@@ -17,19 +30,25 @@ ggplot (data = economy_data) +
 
 ggplot (data = business_data) +
   geom_histogram(mapping = aes(x=dep_time))
+```
+
+##distribution with respect to duration
 
 
-#distribution with respect to duration
-
-
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 ggplot (data = economy_data) +
   geom_histogram(mapping = aes(x=(lubridate::as.duration(time_taken)/3600)))
 
 ggplot (data = business_data) +
   geom_histogram(mapping = aes(x=(lubridate::as.duration(time_taken)/3600)))
+```
 
 
-#Price distribution based on the day of the week
+
+##Price distribution based on the day of the week
+
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
   #Converting date to weekday
 economy_data$date <- as.Date(economy_data$date)
 economy_data$weekday <- strftime(economy_data$date,"%A") 
@@ -40,11 +59,13 @@ weekday_graph_economy <- ggplot (data = economy_data) +
   geom_point(mapping = aes (x = weekday, y = price))+
   geom_point(mapping = aes (x = weekday, y = median(price)),color="red")+
   geom_point(mapping = aes (x = weekday, y = mean(price)),color="gold2")
+(weekday_graph_economy)
   #Plotting price vs day of business
 weekday_graph_business <- ggplot (data = business_data) +
   geom_point(mapping = aes (x = weekday, y = price))+
   geom_point(mapping = aes (x = weekday, y = median(price)),color="red")+
   geom_point(mapping = aes (x = weekday, y = mean(price)),color="gold2")
+(weekday_graph_business)
   #Grouping dataset by weekday
 eco_grp_weekday = economy_data %>% group_by(weekday)  %>%
   summarise(mean_price = mean(price),
@@ -59,8 +80,27 @@ grp_economy <- ggplot (data = eco_grp_weekday) +
   geom_point(mapping = aes (x = weekday, y = mean_price),color="blue")+
   geom_point(mapping = aes (x = weekday, y = median_price),color="red")+
   ylab("price")
+(grp_economy)
     #Mean and median price in business by weekday
 grp_business <- ggplot (data = bus_grp_weekday) +
   geom_point(mapping = aes (x = weekday, y = mean_price),color="blue")+
   geom_point(mapping = aes (x = weekday, y = median_price),color="red")+
   ylab("price")
+(grp_business)
+```
+
+
+#
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+
+```
+
+
+#
+
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+
+```
+
