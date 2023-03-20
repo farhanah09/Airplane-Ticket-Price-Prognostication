@@ -12,7 +12,7 @@ library(dplyr)
 
 economy_data = read_csv("Flights Price Prediction Dataset\\economy.csv", show_col_types = FALSE)
 business_data = read_csv("Flights Price Prediction Dataset\\business.csv", show_col_types = FALSE)
-flight = read_csv("Flights Price Prediction Dataset\\flight.csv", show_col_types = FALSE)
+flight = read_csv("Flights Price Prediction Dataset\\Clean_Dataset.csv", show_col_types = FALSE)
 economy_data$time_taken = lubridate::hm(economy_data$time_taken)
 business_data$time_taken = lubridate::hm(business_data$time_taken)
 head(economy_data)
