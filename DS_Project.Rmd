@@ -12,6 +12,7 @@ library(dplyr)
 
 economy_data = read_csv("Flights Price Prediction Dataset\\economy.csv", show_col_types = FALSE)
 business_data = read_csv("Flights Price Prediction Dataset\\business.csv", show_col_types = FALSE)
+flight = read_csv("Flights Price Prediction Dataset\\flight.csv", show_col_types = FALSE)
 economy_data$time_taken = lubridate::hm(economy_data$time_taken)
 business_data$time_taken = lubridate::hm(business_data$time_taken)
 head(economy_data)
@@ -90,10 +91,12 @@ grp_business <- ggplot (data = bus_grp_weekday) +
 ```
 
 
-#
+# Price distribution on the basis of time in the day (currently merged business and economy)
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
-
+ggplot(data = flight)+
+  geom_point(mapping = aes(departure_time, price))+
+  labs(y= "Price in INR", x = "Time of Departure")
 ```
 
 
