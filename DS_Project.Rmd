@@ -117,6 +117,23 @@ ggplot (data = business_data) +
 
 
 ```
+# Price distrbution on the basis of duration of the flight (Economy & Business)
+
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+library(tidyverse)
+library(glmnet)
+library(caret)
+ggplot (data = economy_data) +
+  geom_point(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price)) +
+  labs(y= "Price in INR", x="Flight duration", title = "Economy class") +
+  geom_smooth(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price))
+
+ggplot (data = business_data) +
+  geom_point(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price)) +
+  labs(y= "Price in INR", x="Flight duration", title = "Business class") +
+  geom_smooth(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price))
+```
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
