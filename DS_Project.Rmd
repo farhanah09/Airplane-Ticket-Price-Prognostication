@@ -23,6 +23,9 @@ flight["stops"][flight["stops"]== "one"] <- '1'
 flight["stops"][flight["stops"]== "two_or_more"] <- '2'
 flight$stops = as.numeric(flight$stops)
 typeof(flight$stops)
+head(flight)
+flight$sector = paste(flight$source_city, flight$destination_city)
+head(flight)
 ```
 
 ##distribution with respect to departure time
@@ -141,8 +144,8 @@ ggplot (data = business_data) +
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
-flight$date <- as.Date(flight$date)
-flight$weekday <- strftime(flight$date,"%A")
+#$date <- as.Date(flight$date)
+#flight$weekday <- strftime(flight$date,"%A")
 
 
 ```
@@ -150,7 +153,7 @@ flight$weekday <- strftime(flight$date,"%A")
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 y = flight$price
-x = model.matrix( ~ ., data =(select(flight,-price, -flight)))
+x = model.matrix( ~ ., data =(select(flight,-price, -flight, -source_city, -destination_city)))
 model = cv.glmnet(x,y,alpha =1,folds = 5)
 optimal_lambda = model$lambda.min
 optimal_model = glmnet(x,y,alpha =1,lambda = optimal_lambda)
