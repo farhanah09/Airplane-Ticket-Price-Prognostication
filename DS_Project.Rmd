@@ -18,6 +18,11 @@ business_data$time_taken = lubridate::hm(business_data$time_taken)
 head(economy_data)
 head(business_data)
 
+flight["stops"][flight["stops"]== "zero"] <- '0'
+flight["stops"][flight["stops"]== "one"] <- '1'
+flight["stops"][flight["stops"]== "two_or_more"] <- '2'
+flight$stops = as.numeric(flight$stops)
+typeof(flight$stops)
 ```
 
 ##distribution with respect to departure time
@@ -133,6 +138,13 @@ ggplot (data = business_data) +
   geom_point(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price)) +
   labs(y= "Price in INR", x="Flight duration", title = "Business class") +
   geom_smooth(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price))
+```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+flight$date <- as.Date(flight$date)
+flight$weekday <- strftime(flight$date,"%A")
+
+
 ```
 
 
