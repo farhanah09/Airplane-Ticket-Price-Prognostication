@@ -25,7 +25,10 @@ flight$stops = as.numeric(flight$stops)
 typeof(flight$stops)
 head(flight)
 flight$sector = paste(flight$source_city, flight$destination_city)
+flight$date <- as.Date(flight$date)
+flight$weekday <- strftime(flight$date,"%A") 
 head(flight)
+
 ```
 
 ##distribution with respect to departure time
@@ -143,26 +146,25 @@ ggplot (data = business_data) +
   geom_smooth(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price))
 ```
 
-```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
-#$date <- as.Date(flight$date)
-#flight$weekday <- strftime(flight$date,"%A")
-
-
-```
-
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 y = flight$price
-x = model.matrix( ~ ., data =(select(flight,-price, -flight, -source_city, -destination_city)))
+x = model.matrix( ~ ., data =(select(flight,-price, -flight, -source_city, -destination_city, -date)))
 model = cv.glmnet(x,y,alpha =1,folds = 5)
 optimal_lambda = model$lambda.min
 optimal_model = glmnet(x,y,alpha =1,lambda = optimal_lambda)
-(c = coef(optimal_model))
-(sum(c==0))
+summary(optimal_model)
+coef(optimal_model)
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 (c = coef(optimal_model))
 (sum(c==0))
 unique(flight$airline)
+```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+library(randomForest)
+#model_rf = randomForest(x,y)
+
 ```
