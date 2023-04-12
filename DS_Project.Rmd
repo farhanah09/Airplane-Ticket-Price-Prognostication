@@ -150,9 +150,16 @@ ggplot (data = business_data) +
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 y = flight$price
 x = model.matrix( ~ ., data =(select(flight,-price, -flight, -source_city, -destination_city, -date)))
-model = cv.glmnet(x,y,alpha =1,folds = 5)
+
+index = sample(nrow(x), floor(0.9 * nrow(x)))
+x_train = x[index, ]
+y_train = y[index]
+x_test = x[-index, ]
+y_test = y[-index]
+
+model = cv.glmnet(x_train,y_train,alpha =1,folds = 5)
 optimal_lambda = model$lambda.min
-optimal_model = glmnet(x,y,alpha =1,lambda = optimal_lambda)
+optimal_model = glmnet(x_train,y_train,alpha =1,lambda = optimal_lambda)
 summary(optimal_model)
 coef(optimal_model)
 ```
@@ -164,7 +171,11 @@ unique(flight$airline)
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
-library(randomForest)
-#model_rf = randomForest(x,y)
+library(pROC)
+
+predicted = predict(optimal_model, x_test)
+auc(y_test, predicted)
+postResample(y_test, predicted)
+
 
 ```
