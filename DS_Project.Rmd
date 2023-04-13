@@ -34,7 +34,7 @@ head(flight)
 
 ```
 
-##distribution with respect to departure time
+##Distribution of data with respect to departure time
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
@@ -47,7 +47,7 @@ ggplot (data = business_data) +
   geom_histogram(mapping = aes(x=dep_time))
 ```
 
-##distribution with respect to duration
+##Distribution of data with respect to duration
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
@@ -105,7 +105,7 @@ grp_business <- ggplot (data = bus_grp_weekday) +
 ```
 
 
-# Price distribution on the basis of time in the day (currently merged business and economy)
+##Price distribution on the basis of time in the day (currently merged business and economy)
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 ggplot(data = flight)+
@@ -114,7 +114,7 @@ ggplot(data = flight)+
 ```
 
 
-# Price distrbution on the basis of duration of the flight (Economy & Business)
+##Price distrbution on the basis of duration of the flight (Economy & Business)
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
@@ -131,7 +131,7 @@ ggplot (data = business_data) +
 
 
 ```
-# Price distrbution on the basis of duration of the flight (Economy & Business)
+##Price distrbution on the basis of duration of the flight (Economy & Business)
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
@@ -147,32 +147,41 @@ ggplot (data = business_data) +
   geom_smooth(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price))
 ```
 
-
+##Model Fitting: Lasso Model
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Defining predictor and response variables
 y = flight$price
 x = model.matrix( ~ ., data =(select(flight,-price, -flight, -source_city, -destination_city, -date)))
 
-index = sample(nrow(x), floor(0.9 * nrow(x)))
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
 x_train = x[index, ]
 y_train = y[index]
 x_test = x[-index, ]
 y_test = y[-index]
 
+#Fitting the model
 model = cv.glmnet(x_train,y_train,alpha =1,folds = 5)
 optimal_lambda = model$lambda.min
 optimal_model = glmnet(x_train,y_train,alpha =1,lambda = optimal_lambda)
 summary(optimal_model)
+
+#Extracting model coefficients
 coef(optimal_model)
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Counting number of variables removed in the model
 (c = coef(optimal_model))
 (sum(c==0))
-unique(flight$airline)
+
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Extracting pmodel predictions
 predicted = predict(optimal_model, x_test)
+
+#Evaluation metrics
 auc(y_test, predicted)
 postResample(y_test, predicted)
 
