@@ -11,6 +11,7 @@ library(lubridate)
 library(dplyr)
 library(glmnet)
 library(caret)
+library(pROC)
 
 economy_data = read_csv("Flights Price Prediction Dataset\\economy.csv", show_col_types = FALSE)
 business_data = read_csv("Flights Price Prediction Dataset\\business.csv", show_col_types = FALSE)
@@ -171,15 +172,8 @@ unique(flight$airline)
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
-library(pROC)
-
 predicted = predict(optimal_model, x_test)
 auc(y_test, predicted)
 postResample(y_test, predicted)
-actual <- y_test > 0.5
-
-xtab <- table(predicted, y_test)
-cm <- caret::confusionMatrix(xtab)
-cm
 
 ```
