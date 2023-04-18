@@ -34,8 +34,12 @@ flight$date <- as.Date(flight$date)
 flight$weekday <- strftime(flight$date,"%A") 
 head(flight)
 head(flight_new)
-
-
+unique(flight_new$Total_stops)
+flight_new["Total_stops"][flight_new["Total_stops"]== "non-stop"] <- '0'
+flight_new["Total_stops"][flight_new["Total_stops"]== "1-stop"] <- '1'
+flight_new["Total_stops"][flight_new["Total_stops"]== "2+-stop"] <- '2'
+flight_new$sector = paste(flight_new$Source, flight_new$Destination)
+head(flight_new)
 ```
 
 ##Distribution of data with respect to departure time
@@ -179,6 +183,72 @@ coef(optimal_model)
 (c = coef(optimal_model))
 (sum(c==0))
 
+```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Extracting pmodel predictions
+predicted = predict(optimal_model, x_test)
+
+#Evaluation metrics
+auc(y_test, predicted)
+postResample(y_test, predicted)
+
+```
+
+##Model Fitting: Lasso Model to new data
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Defining predictor and response variables
+head(flight_new)
+y = flight_new$Fare
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Source, -Destination, -Date_of_journey)))
+
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
+x_train = x[index, ]
+y_train = y[index]
+x_test = x[-index, ]
+y_test = y[-index]
+
+#Fitting the model
+model = cv.glmnet(x_train,y_train,alpha =1,folds = 5)
+optimal_lambda = model$lambda.min
+optimal_model = glmnet(x_train,y_train,alpha =1,lambda = optimal_lambda)
+summary(optimal_model)
+
+#Extracting model coefficients
+coef(optimal_model)
+```
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Extracting pmodel predictions
+predicted = predict(optimal_model, x_test)
+
+#Evaluation metrics
+auc(y_test, predicted)
+postResample(y_test, predicted)
+
+```
+##Model Fitting: Lasso Model to new data
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Defining predictor and response variables
+head(flight_new)
+y = flight_new$Fare
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey)))
+
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
+x_train = x[index, ]
+y_train = y[index]
+x_test = x[-index, ]
+y_test = y[-index]
+
+#Fitting the model
+model = cv.glmnet(x_train,y_train,alpha =1,folds = 5)
+optimal_lambda = model$lambda.min
+optimal_model = glmnet(x_train,y_train,alpha =1,lambda = optimal_lambda)
+summary(optimal_model)
+
+#Extracting model coefficients
+coef(optimal_model)
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
