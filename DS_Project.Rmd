@@ -260,3 +260,20 @@ auc(y_test, predicted)
 postResample(y_test, predicted)
 
 ```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+library(caTools)
+library(randomForest)
+
+classifier_RF = randomForest(x = x_train,
+                             y = y_train,
+                             ntree = 10)
+classifier_RF
+
+predicted = predict(optimal_model, x_test)
+
+#Evaluation metrics
+auc(y_test, predicted)
+postResample(y_test, predicted)
+
+```
