@@ -16,10 +16,12 @@ library(pROC)
 economy_data = read_csv("Flights Price Prediction Dataset\\economy.csv", show_col_types = FALSE)
 business_data = read_csv("Flights Price Prediction Dataset\\business.csv", show_col_types = FALSE)
 flight = read_csv("Flights Price Prediction Dataset\\Clean_Dataset.csv", show_col_types = FALSE)
+flight_new = read_csv("Flights Price Prediction Dataset\\Cleaned_dataset.csv", show_col_types = FALSE)
 economy_data$time_taken = lubridate::hm(economy_data$time_taken)
 business_data$time_taken = lubridate::hm(business_data$time_taken)
 head(economy_data)
 head(business_data)
+
 
 flight["stops"][flight["stops"]== "zero"] <- '0'
 flight["stops"][flight["stops"]== "one"] <- '1'
@@ -31,6 +33,8 @@ flight$sector = paste(flight$source_city, flight$destination_city)
 flight$date <- as.Date(flight$date)
 flight$weekday <- strftime(flight$date,"%A") 
 head(flight)
+head(flight_new)
+
 
 ```
 
