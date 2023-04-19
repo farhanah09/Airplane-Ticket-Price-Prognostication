@@ -11,14 +11,19 @@ library(lubridate)
 library(dplyr)
 library(glmnet)
 library(caret)
+library(pROC)
+library(caTools)
+library(randomForest)
 
 economy_data = read_csv("Flights Price Prediction Dataset\\economy.csv", show_col_types = FALSE)
 business_data = read_csv("Flights Price Prediction Dataset\\business.csv", show_col_types = FALSE)
 flight = read_csv("Flights Price Prediction Dataset\\Clean_Dataset.csv", show_col_types = FALSE)
+flight_new = read_csv("Flights Price Prediction Dataset\\Cleaned_dataset.csv", show_col_types = FALSE)
 economy_data$time_taken = lubridate::hm(economy_data$time_taken)
 business_data$time_taken = lubridate::hm(business_data$time_taken)
 head(economy_data)
 head(business_data)
+
 
 flight["stops"][flight["stops"]== "zero"] <- '0'
 flight["stops"][flight["stops"]== "one"] <- '1'
@@ -30,10 +35,16 @@ flight$sector = paste(flight$source_city, flight$destination_city)
 flight$date <- as.Date(flight$date)
 flight$weekday <- strftime(flight$date,"%A") 
 head(flight)
-
+head(flight_new)
+unique(flight_new$Total_stops)
+flight_new["Total_stops"][flight_new["Total_stops"]== "non-stop"] <- '0'
+flight_new["Total_stops"][flight_new["Total_stops"]== "1-stop"] <- '1'
+flight_new["Total_stops"][flight_new["Total_stops"]== "2+-stop"] <- '2'
+flight_new$sector = paste(flight_new$Source, flight_new$Destination)
+head(flight_new)
 ```
 
-##distribution with respect to departure time
+##Distribution of data with respect to departure time
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
@@ -46,7 +57,7 @@ ggplot (data = business_data) +
   geom_histogram(mapping = aes(x=dep_time))
 ```
 
-##distribution with respect to duration
+##Distribution of data with respect to duration
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
@@ -104,7 +115,7 @@ grp_business <- ggplot (data = bus_grp_weekday) +
 ```
 
 
-# Price distribution on the basis of time in the day (currently merged business and economy)
+##Price distribution on the basis of time in the day (currently merged business and economy)
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 ggplot(data = flight)+
@@ -113,7 +124,7 @@ ggplot(data = flight)+
 ```
 
 
-# Price distrbution on the basis of duration of the flight (Economy & Business)
+##Price distrbution on the basis of duration of the flight (Economy & Business)
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
@@ -130,7 +141,7 @@ ggplot (data = business_data) +
 
 
 ```
-# Price distrbution on the basis of duration of the flight (Economy & Business)
+##Price distrbution on the basis of duration of the flight (Economy & Business)
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
@@ -146,40 +157,133 @@ ggplot (data = business_data) +
   geom_smooth(mapping = aes(x=(lubridate::as.duration(time_taken)/3600), y=price))
 ```
 
-
+##Model Fitting: Lasso Model
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Defining predictor and response variables
 y = flight$price
 x = model.matrix( ~ ., data =(select(flight,-price, -flight, -source_city, -destination_city, -date)))
 
-index = sample(nrow(x), floor(0.9 * nrow(x)))
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
 x_train = x[index, ]
 y_train = y[index]
 x_test = x[-index, ]
 y_test = y[-index]
 
+#Fitting the model
 model = cv.glmnet(x_train,y_train,alpha =1,folds = 5)
 optimal_lambda = model$lambda.min
 optimal_model = glmnet(x_train,y_train,alpha =1,lambda = optimal_lambda)
 summary(optimal_model)
+
+#Extracting model coefficients
 coef(optimal_model)
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Counting number of variables removed in the model
 (c = coef(optimal_model))
 (sum(c==0))
-unique(flight$airline)
+
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
-library(pROC)
-
+#Extracting pmodel predictions
 predicted = predict(optimal_model, x_test)
+
+#Evaluation metrics
 auc(y_test, predicted)
 postResample(y_test, predicted)
-actual <- y_test > 0.5
 
-xtab <- table(predicted, y_test)
-cm <- caret::confusionMatrix(xtab)
-cm
+```
+
+##Model Fitting: Lasso Model to new data
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Defining predictor and response variables
+head(flight_new)
+y = flight_new$Fare
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Source, -Destination, -Date_of_journey)))
+
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
+x_train = x[index, ]
+y_train = y[index]
+x_test = x[-index, ]
+y_test = y[-index]
+
+#Fitting the model
+model = cv.glmnet(x_train,y_train,alpha =1,folds = 5)
+optimal_lambda = model$lambda.min
+optimal_model = glmnet(x_train,y_train,alpha =1,lambda = optimal_lambda)
+summary(optimal_model)
+
+#Extracting model coefficients
+coef(optimal_model)
+```
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Extracting pmodel predictions
+predicted = predict(optimal_model, x_test)
+
+#Evaluation metrics
+auc(y_test, predicted)
+postResample(y_test, predicted)
+
+```
+##Model Fitting: Lasso Model to new data
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Defining predictor and response variables
+head(flight_new)
+y = flight_new$Fare
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey)))
+
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
+x_train = x[index, ]
+y_train = y[index]
+x_test = x[-index, ]
+y_test = y[-index]
+
+#Fitting the model
+model = cv.glmnet(x_train,y_train,alpha =1,folds = 5)
+optimal_lambda = model$lambda.min
+optimal_model = glmnet(x_train,y_train,alpha =1,lambda = optimal_lambda)
+summary(optimal_model)
+
+#Extracting model coefficients
+coef(optimal_model)
+```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+#Extracting pmodel predictions
+predicted = predict(optimal_model, x_test)
+
+#Evaluation metrics
+auc(y_test, predicted)
+postResample(y_test, predicted)
+
+```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+
+#Defining predictor and response variables
+head(flight_new)
+y = flight_new$Fare
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Source, -Destination, -Date_of_journey)))
+
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
+x_train = x[index, ]
+y_train = y[index]
+x_test = x[-index, ]
+y_test = y[-index]
+
+classifier_RF = randomForest(x = x_train, y = y_train, ntree = 100)
+classifier_RF
+
+predicted = predict(classifier_RF, x_test)
+
+#Evaluation metrics
+auc(y_test, predicted)
+postResample(y_test, predicted)
 
 ```
