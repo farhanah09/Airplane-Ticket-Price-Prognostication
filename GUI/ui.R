@@ -1,6 +1,6 @@
 library(shiny)
 library(shinyWidgets)
-
+library(lubridate)
 # Define UI ----
 ui <- fluidPage(
   # use a gradient in background
@@ -37,11 +37,20 @@ ui <- fluidPage(
            selectInput("class", h3("Class"), 
                        choices = list("Economy","Premium Economy", "Business","First"
                                       ), selected = 1)),
+    column(5,
+           selectInput("deptime", h3("Departure Time"), 
+                       choices = list("After 6 PM","Before 6 PM", "6 AM - 12 PM","12 PM - 6 PM"
+                       ), selected = 1)),
+    column(5,
+           selectInput("arrtime", h3("Arrival Time"), 
+                       choices = list("After 6 PM","Before 6 PM", "6 AM - 12 PM","12 PM - 6 PM"
+                       ), selected = 1)),
     column(5, 
              dateInput("date", 
                        (h3("Date input")), 
-                       value = "2023-01-01")   
+                       value = today())   
     ),
+    
               column(10,
                      submitButton("Submit"), align = "center"),
     mainPanel(
@@ -50,7 +59,9 @@ ui <- fluidPage(
       textOutput("date"),
       textOutput("stops"),
       textOutput("airline"),
-      textOutput("class")
+      textOutput("class"),
+      textOutput("deptime"),
+      textOutput("arrtime")
     
     ),
   )
@@ -60,10 +71,12 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$arrc <- renderText({paste("You have selected the arrival city of", input$arrc)})
   output$depc <- renderText({paste("with departue city as", input$depc)})
-  output$date <- renderText({paste("on the date of", input$date)})
+  output$date <- renderText({paste("with days left to travel of", as.Date(input$date) - today())})
   output$stops <- renderText({paste("with stops:", input$stops)})
   output$airline <- renderText({paste("in", input$airline)})
   output$class <- renderText({paste("in class", input$class)})
+  output$deptime <- renderText({paste("leaving at", input$deptime)})
+  output$arrtime <- renderText({paste("arriving at", input$arrtime)})
 }
 
 # Run the app ----
