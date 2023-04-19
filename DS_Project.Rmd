@@ -12,6 +12,8 @@ library(dplyr)
 library(glmnet)
 library(caret)
 library(pROC)
+library(caTools)
+library(randomForest)
 
 economy_data = read_csv("Flights Price Prediction Dataset\\economy.csv", show_col_types = FALSE)
 business_data = read_csv("Flights Price Prediction Dataset\\business.csv", show_col_types = FALSE)
@@ -262,15 +264,23 @@ postResample(y_test, predicted)
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
-library(caTools)
-library(randomForest)
 
-classifier_RF = randomForest(x = x_train,
-                             y = y_train,
-                             ntree = 10)
+#Defining predictor and response variables
+head(flight_new)
+y = flight_new$Fare
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Source, -Destination, -Date_of_journey)))
+
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
+x_train = x[index, ]
+y_train = y[index]
+x_test = x[-index, ]
+y_test = y[-index]
+
+classifier_RF = randomForest(x = x_train, y = y_train, ntree = 100)
 classifier_RF
 
-predicted = predict(optimal_model, x_test)
+predicted = predict(classifier_RF, x_test)
 
 #Evaluation metrics
 auc(y_test, predicted)
