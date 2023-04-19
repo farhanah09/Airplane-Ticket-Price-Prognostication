@@ -14,6 +14,7 @@ library(caret)
 library(pROC)
 library(caTools)
 library(randomForest)
+#library(AICcmodavg)
 
 economy_data = read_csv("Flights Price Prediction Dataset\\economy.csv", show_col_types = FALSE)
 business_data = read_csv("Flights Price Prediction Dataset\\business.csv", show_col_types = FALSE)
@@ -285,5 +286,54 @@ predicted = predict(classifier_RF, x_test)
 #Evaluation metrics
 auc(y_test, predicted)
 postResample(y_test, predicted)
+
+
+```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+unique(flight_new$Airline)
+head(flight_new)
+unique(flight_new$Class)
+unique(flight_new$Arrival)
+
+```
+```{r}
+
+Airline = "SpiceJet"
+Source = "Delhi"
+Destination = "Mumbai"
+Flight_date = as.Date(a) 
+days_left = 5
+Tck_class = "Economy" 
+Stps = "1"
+Arival_time = "After 6 AM" 
+Departure_time = "Before 6 PM"
+Drtn=2
+
+Journey_day = strftime(Flight_date,"%A") 
+flight_inpt = data.frame(Journey_day, Airline, Tck_class, Source, Destination, Stps, Arival_time, Departure_time, Drtn, days_left)
+inp = model.matrix( ~ ., data = flight_inpt)
+prd = predict(optimal_model, inp)
+
+
+```
+
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+head(x_test)
+class(x_test)
+head(select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey))
+class(flight_new)
+
+flightPricePredict <- function(Airline, Source, Destination, Flight_date, days_left, Tck_class, Stps, Arival_time, Departure_time, Drtn=2){
+  #TODO convert to journey day also
+  Journey_day = strftime(Flight_date,"%A") 
+  flight_inpt = data.frame(Journey_day, Airline, Tck_class, Source, Destination, Stps, Arival_time, Departure_time, Drtn, days_left)
+  inp = model.matrix( ~ ., data = flight_inpt)
+  prd = predict(optimal_model, inp)
+  return(prd)
+}
+a = "11/02/22"
+flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date(a), 5, "Economy", "1", "After 6 AM", "Before 6 PM")
 
 ```
