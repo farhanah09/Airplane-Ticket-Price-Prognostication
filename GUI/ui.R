@@ -24,6 +24,19 @@ ui <- fluidPage(
                        choices = list("Hyderabad", "Bangalore",
                                                 "Ahmedabad", "Chennai", 
                                                 "Delhi", "Mumbai"), selected = 1)),
+    column(5,
+           selectInput("stops", h3("Number of Stops"), 
+                       choices = list("Zero" = 0, "One" = 1, "Two" = 2
+                                      ), selected = 1)),
+    column(5,
+           selectInput("airline", h3("Airline"), 
+                       choices = list("Air India", "Indigo",
+                                      "SpiceJet", "Go FIRST", 
+                                      "AirAsia", "Vistara", "AkasaAir", "StarAir", "AllianceAir"), selected = 1)),
+    column(5,
+           selectInput("class", h3("Class"), 
+                       choices = list("Economy","Premium Economy", "Business","First"
+                                      ), selected = 1)),
     column(5, 
              dateInput("date", 
                        (h3("Date input")), 
@@ -33,10 +46,11 @@ ui <- fluidPage(
                      submitButton("Submit"), align = "center"),
     mainPanel(
       textOutput("arrc"),
-      mainPanel(
-        textOutput("depc")), 
-      mainPanel(
-        textOutput("date"))
+      textOutput("depc"), 
+      textOutput("date"),
+      textOutput("stops"),
+      textOutput("airline"),
+      textOutput("class")
     
     ),
   )
@@ -47,6 +61,9 @@ server <- function(input, output) {
   output$arrc <- renderText({paste("You have selected the arrival city of", input$arrc)})
   output$depc <- renderText({paste("with departue city as", input$depc)})
   output$date <- renderText({paste("on the date of", input$date)})
+  output$stops <- renderText({paste("with stops:", input$stops)})
+  output$airline <- renderText({paste("in", input$airline)})
+  output$class <- renderText({paste("in class", input$class)})
 }
 
 # Run the app ----
