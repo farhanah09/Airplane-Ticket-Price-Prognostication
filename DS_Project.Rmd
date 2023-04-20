@@ -41,6 +41,7 @@ unique(flight_new$Total_stops)
 flight_new["Total_stops"][flight_new["Total_stops"]== "non-stop"] <- '0'
 flight_new["Total_stops"][flight_new["Total_stops"]== "1-stop"] <- '1'
 flight_new["Total_stops"][flight_new["Total_stops"]== "2+-stop"] <- '2'
+flight_new$Total_stops = as.numeric(flight_new$Total_stops)
 flight_new$sector = paste(flight_new$Source, flight_new$Destination)
 head(flight_new)
 ```
@@ -235,7 +236,7 @@ postResample(y_test, predicted)
 #Defining predictor and response variables
 head(flight_new)
 y = flight_new$Fare
-x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey)))
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey, -Duration_in_hours  )))
 
 #Splitting data
 index = sample(nrow(x), floor(0.8 * nrow(x)))
@@ -302,38 +303,35 @@ unique(flight_new$Arrival)
 Airline = "SpiceJet"
 Source = "Delhi"
 Destination = "Mumbai"
-Flight_date = as.Date(a) 
-days_left = 5
-Tck_class = "Economy" 
-Stps = "1"
-Arival_time = "After 6 AM" 
-Departure_time = "Before 6 PM"
-Drtn=2
+Flight_date = as.Date("11/02/22") 
+Days_left = 5
+Class = "Economy" 
+Total_stops = 1
+Arrival = "Before 6 AM" 
+Departure = "6 AM - 12 PM"
+
 
 Journey_day = strftime(Flight_date,"%A") 
-flight_inpt = data.frame(Journey_day, Airline, Tck_class, Source, Destination, Stps, Arival_time, Departure_time, Drtn, days_left)
-inp = model.matrix( ~ ., data = flight_inpt)
-prd = predict(optimal_model, inp)
-
-
+flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left)
+inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey, -Duration_in_hours)))
+prd = predict(optimal_model, inp[1, ])
+prd
+x_test[1, ]
+inp[1, ]
+flight_inpt
+select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey, -Duration_in_hours)
 ```
 
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
-head(x_test)
-class(x_test)
-head(select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey))
-class(flight_new)
 
-flightPricePredict <- function(Airline, Source, Destination, Flight_date, days_left, Tck_class, Stps, Arival_time, Departure_time, Drtn=2){
-  #TODO convert to journey day also
+flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_left, Class, Total_stops, Arrival, Departure, Duration_in_hours = 2){
   Journey_day = strftime(Flight_date,"%A") 
-  flight_inpt = data.frame(Journey_day, Airline, Tck_class, Source, Destination, Stps, Arival_time, Departure_time, Drtn, days_left)
-  inp = model.matrix( ~ ., data = flight_inpt)
-  prd = predict(optimal_model, inp)
+  flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Duration_in_hours, Days_left)
+  inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey)))
+  prd = predict(optimal_model, inp[1, ])
   return(prd)
 }
-a = "11/02/22"
-flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date(a), 5, "Economy", "1", "After 6 AM", "Before 6 PM")
+flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date("11/02/22"), 5, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
 
 ```
