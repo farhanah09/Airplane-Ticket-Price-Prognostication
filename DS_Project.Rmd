@@ -320,6 +320,7 @@ x_test[1, ]
 inp[1, ]
 flight_inpt
 select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey, -Duration_in_hours)
+class(prd)
 ```
 
 
