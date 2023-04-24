@@ -77,19 +77,18 @@ flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_l
   flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left)
   inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
   prd = predict(model, inp[1, ])
-  if(Days_left > 1){
-    for i in 1:Days_left:
-      print(i)
-    prd = append(prd)
+  for (i in Days_left:1) {
+    flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left=i)
+    inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
+    prd_n = predict(model, inp[1, ])
+    prd = append(prd, prd_n)
   }
-  return(prd)
+  rtn = list(rev(prd[-1]), which.min(rev(prd[-1])))
+  return(rtn)
 }
 
-flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date("12/02/22"), 5, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
-flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date("12/02/22"), 4, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
-flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date("12/02/22"), 3, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
-flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date("12/02/22"), 2, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
-flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date("12/02/22"), 1, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
+pred = flightPricePredict("SpiceJet", "Kolkata", "Hyderabad", as.Date("1/02/22"), 15, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
+pred
 
 
 ```
