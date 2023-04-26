@@ -258,6 +258,8 @@ coef(optimal_model)
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 #Extracting pmodel predictions
 predicted = predict(optimal_model, x_test)
+residuals = predicted - y_test
+hist(residuals)
 
 #Evaluation metrics
 auc(y_test, predicted)
