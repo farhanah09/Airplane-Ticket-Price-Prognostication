@@ -11,7 +11,6 @@ library(pROC)
 library(caTools)
 library(randomForest)
 
-#setwd("\\andrew.ad.cmu.edu/users/users23/farhanah/Documents/GitHub")
 
 flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_left, Class, Total_stops, Arrival, Departure){
   flight_new = read_csv("~/GitHub/Data_Science_Project_R/Flights Price Prediction Dataset/Cleaned_dataset.csv", show_col_types = FALSE)
@@ -91,7 +90,7 @@ ui <- fluidPage(
     mainPanel(
     #   textOutput("arrc"),
     #   textOutput("depc"), 
-      textOutput("date"),
+      textOutput("days_left"),
     #   textOutput("stops"),
     #   textOutput("airline"),
     #   textOutput("class"),
@@ -103,17 +102,9 @@ ui <- fluidPage(
   
 # Define server logic ----
 server <- function(input, output) {
-#  output$arrc <- renderText({paste("You have selected the arrival city of", input$arrc)})
-#  output$depc <- renderText({paste("with departue city as", input$depc)})
-   # output$date <- renderText({paste("with days left to travel of", (as.Date(input$date) - today()))})
-#  output$stops <- renderText({paste("with stops:", input$stops)})
-#  output$airline <- renderText({paste("in", input$airline)})
-#  output$class <- renderText({paste("in class", input$class)})
-#  output$deptime <- renderText({paste("leaving at", input$deptime)})
-#  output$arrtime <- renderText({paste("arriving at", input$arrtime)})
-   date_inp <- reactive({as.Date(input$date)})
-   aaj <- reactive({today()})
-   days_left <- reactive({as.Date(input$date) - today()})
+   date_inp <- reactive(as.POSIXct(input$date)) #this is where the error is
+   aaj <- as.Date(today())
+   days_left <- as.numeric(difftime((as.POXIct(date_inp)),aaj))
    pred = flightPricePredict(input$depc, input$arrc, date_inp, days_left, input$class,  input$stops, input$deptime,input$arrtime)
    output$prediction <- renderText({paste("the price is cheapest at", pred)})
 }
