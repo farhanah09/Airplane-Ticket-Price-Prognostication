@@ -259,7 +259,7 @@ coef(optimal_model)
 #Extracting pmodel predictions
 predicted = predict(optimal_model, x_test)
 residuals = predicted - y_test
-hist(residuals)
+plot(y_test,residuals)
 
 #Evaluation metrics
 auc(y_test, predicted)
@@ -281,11 +281,12 @@ y_train = y[index]
 x_test = x[-index, ]
 y_test = y[-index]
 
-classifier_RF = randomForest(x = x_train, y = y_train, ntree = 100)
+classifier_RF = randomForest(x = x_train, y = y_train, ntree = 25)
 classifier_RF
 
 predicted = predict(classifier_RF, x_test)
-
+residuals = predicted - y_test
+plot(y_test,residuals)
 #Evaluation metrics
 auc(y_test, predicted)
 postResample(y_test, predicted)
