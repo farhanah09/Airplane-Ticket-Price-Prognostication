@@ -10,17 +10,18 @@ library(caret)
 library(pROC)
 library(caTools)
 library(randomForest)
+addResourcePath("img", "img")
 
 
 flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_left, Class, Total_stops, Arrival, Departure){
-  flight_new = read_csv("~/GitHub/Data_Science_Project_R/Flights Price Prediction Dataset/Cleaned_dataset.csv", show_col_types = FALSE)
+  flight_new = read_csv("Flights Price Prediction Dataset/Cleaned_dataset.csv", show_col_types = FALSE)
   unique(flight_new$Total_stops)
   flight_new["Total_stops"][flight_new["Total_stops"]== "non-stop"] <- '0'
   flight_new["Total_stops"][flight_new["Total_stops"]== "1-stop"] <- '1'
   flight_new["Total_stops"][flight_new["Total_stops"]== "2+-stop"] <- '2'
   flight_new$Total_stops = as.numeric(flight_new$Total_stops)
   
-  model <- readRDS("~/GitHub/Data_Science_Project_R/model_file.rds")
+  model <- readRDS("model_file.rds")
   Journey_day = strftime(Flight_date,"%A")
   flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left)
   inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
@@ -44,7 +45,7 @@ ui <- fluidPage(
   ),
   titlePanel(em(h1("Flight Price Predictinator", align = "center"))),
   mainPanel(
-    img(src = "flight.png", height = 140, width = 400), align = "center"), 
+    img(src = "img/flight.png", height = 140, width = 400), align = "center"), 
   fluidRow(
     
     column(5,
@@ -67,7 +68,7 @@ ui <- fluidPage(
                                       "SpiceJet", "Go FIRST", 
                                       "AirAsia", "Vistara", "AkasaAir", "StarAir", "AllianceAir"), selected = 1)),
     column(5,
-           selectInput("class", h3("Class"), 
+           selectInput("seat_class", h3("Class"), 
                        choices = list("Economy","Premium Economy", "Business","First"
                                       ), selected = 1)),
     column(5,
@@ -86,7 +87,7 @@ ui <- fluidPage(
     ),
     
              column(10,
-                     submitButton("Submit"), align = "center"),
+                     actionButton("submit","Submit"), align = "center"),
     mainPanel(
     #   textOutput("arrc"),
     #   textOutput("depc"), 
@@ -96,17 +97,23 @@ ui <- fluidPage(
     #   textOutput("class"),
     #   textOutput("deptime"),
     #   textOutput("arrtime")
+      textOutput("prediction")
     )
   )
 )
   
 # Define server logic ----
 server <- function(input, output) {
-   date_inp <- reactive(as.POSIXct(input$date)) #this is where the error is
-   aaj <- as.Date(today())
-   days_left <- as.numeric(difftime((as.POXIct(date_inp)),aaj))
-   pred = flightPricePredict(input$depc, input$arrc, date_inp, days_left, input$class,  input$stops, input$deptime,input$arrtime)
-   output$prediction <- renderText({paste("the price is cheapest at", pred)})
+  
+  observeEvent(input$submit, {
+    date_inp <- reactive((input$date))
+    aaj <- as.Date(today())
+    days_left <- as.numeric(difftime(((date_inp())),aaj))
+    #cat(input$airline, input$depc,input$arrc, input$date, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
+    #pred = flightPricePredict(input$airline, input$depc,input$arrc, input$date, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
+    pred = "Swim and go bro"  #test output line
+    output$prediction <- renderText({paste("the price is cheapest at", pred)}) 
+  })
 }
 
 # Run the app ----
