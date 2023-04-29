@@ -73,11 +73,11 @@ ui <- fluidPage(
                                       ), selected = 1)),
     column(5,
            selectInput("deptime", h3("Departure Time"), 
-                       choices = list("After 6 PM","Before 6 PM", "6 AM - 12 PM","12 PM - 6 PM"
+                       choices = list("After 6 PM","Before 6 AM", "6 AM - 12 PM","12 PM - 6 PM"
                        ), selected = 1)),
     column(5,
            selectInput("arrtime", h3("Arrival Time"), 
-                       choices = list("After 6 PM","Before 6 PM", "6 AM - 12 PM","12 PM - 6 PM"
+                       choices = list("After 6 PM","Before 6 AM", "6 AM - 12 PM","12 PM - 6 PM"
                        ), selected = 1)),
     column(5, 
            dateInput("date", h3("Select Date"),
@@ -109,8 +109,8 @@ server <- function(input, output) {
     date_inp <- reactive((input$date))
     aaj <- as.Date(today())
     days_left <- as.numeric(difftime(((date_inp())),aaj))
-    #cat(input$airline, input$depc,input$arrc, input$date, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
-    #pred = flightPricePredict(input$airline, input$depc,input$arrc, input$date, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
+    cat(input$airline, input$depc,input$arrc, input$date, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
+    pred = flightPricePredict(input$airline, input$depc,input$arrc, input$date, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
     pred = "Swim and go bro"  #test output line
     output$prediction <- renderText({paste("the price is cheapest at", pred)}) 
   })
