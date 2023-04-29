@@ -64,6 +64,19 @@ saveRDS(optimal_model, file = "model_file.rds")
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 
+head(flight_new)
+y = flight_new$Fare
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
+
+#Splitting data
+index = sample(nrow(x), floor(0.8 * nrow(x)))
+x_train = x[index, ]
+y_train = y[index]
+x_test = x[-index, ]
+y_test = y[-index]
+
+head(x_train)
+
 flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_left, Class, Total_stops, Arrival, Departure){
   flight_new = read_csv("Flights Price Prediction Dataset\\Cleaned_dataset.csv", show_col_types = FALSE)
   unique(flight_new$Total_stops)
@@ -72,15 +85,18 @@ flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_l
   flight_new["Total_stops"][flight_new["Total_stops"]== "2+-stop"] <- '2'
   flight_new$Total_stops = as.numeric(flight_new$Total_stops)
   
-  model <- readRDS("model_file.rds")
+  model <- readRDS("model_file_Random_Forest.rds")
   Journey_day = strftime(Flight_date,"%A")
   flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left)
   inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
-  prd = predict(model, inp[1, ])
+  temp = predict(model, newdata=inp)
+  prd = as.numeric(temp[1])
+  
   for (i in Days_left:1) {
     flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left=i)
     inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
-    prd_n = predict(model, inp[1, ])
+    temp_n = predict(model, newdata=inp)
+    prd_n = as.numeric(temp_n[1])
     prd = append(prd, prd_n)
   }
   rtn = list(rev(prd[-1]), which.min(rev(prd[-1])))
@@ -89,6 +105,52 @@ flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_l
 
 pred = flightPricePredict("SpiceJet", "Kolkata", "Hyderabad", as.Date("1/02/22"), 15, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
 pred
+
+
+```
+
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
+
+Airline = "SpiceJet"
+Source = "Kolkata"
+Destination = "Hyderabad"
+Flight_date = as.Date("1/02/22")
+Days_left = 2
+Class = "Economy"
+Total_stops = 0
+Arrival = "Before 6 AM"
+Departure = "6 AM - 12 PM"
+
+  flight_new = read_csv("Flights Price Prediction Dataset\\Cleaned_dataset.csv", show_col_types = FALSE)
+  unique(flight_new$Total_stops)
+  flight_new["Total_stops"][flight_new["Total_stops"]== "non-stop"] <- '0'
+  flight_new["Total_stops"][flight_new["Total_stops"]== "1-stop"] <- '1'
+  flight_new["Total_stops"][flight_new["Total_stops"]== "2+-stop"] <- '2'
+  flight_new$Total_stops = as.numeric(flight_new$Total_stops)
+  
+  model <- readRDS("model_file_Random_Forest.rds")
+  Journey_day = strftime(Flight_date,"%A")
+  flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left)
+  inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
+  temp = predict(model, newdata=inp)
+  prd = as.numeric(temp[1])
+  prd
+  
+  for (i in Days_left:1) {
+    flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left=i)
+    inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
+    temp_n = predict(model, newdata=inp)
+    temp_n[1]
+    prd_n = as.numeric(temp_n[1])
+    prd_n
+    prd = append(prd, prd_n)
+    prd
+  }
+  rtn = list(rev(prd[-1]), which.min(rev(prd[-1])))
+  rtn
+
+
 
 
 ```

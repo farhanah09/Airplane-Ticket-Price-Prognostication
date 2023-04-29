@@ -13,25 +13,31 @@ library(randomForest)
 addResourcePath("img", "img")
 
 
-flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_left, Class, Total_stops, Arrival, Departure){
+flightPricePredict <- function(Airline, Source, Destination, Journey_day, Days_left, Class, Total_stops, Arrival, Departure){
   flight_new = read_csv("Flights Price Prediction Dataset/Cleaned_dataset.csv", show_col_types = FALSE)
-  unique(flight_new$Total_stops)
   flight_new["Total_stops"][flight_new["Total_stops"]== "non-stop"] <- '0'
   flight_new["Total_stops"][flight_new["Total_stops"]== "1-stop"] <- '1'
   flight_new["Total_stops"][flight_new["Total_stops"]== "2+-stop"] <- '2'
   flight_new$Total_stops = as.numeric(flight_new$Total_stops)
   
-  model <- readRDS("model_file.rds")
-  Journey_day = strftime(Flight_date,"%A")
+  cat(Airline, Source, Destination, Journey_day, Days_left, Class, Total_stops, Arrival, Departure)
+  
+  model <- readRDS("model_file_Random_Forest.rds")
+  #Journey_day = strftime(Flight_date,"%A")
   flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left)
   inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
-  prd = predict(model, inp[1, ])
+  temp = predict(model, newdata=inp)
+  prd = as.numeric(temp[1])
+  
   for (i in Days_left:1) {
     flight_inpt = data.frame(Journey_day, Airline, Class, Source, Departure, Total_stops, Arrival, Destination, Days_left=i)
     inp = model.matrix( ~ ., data =rbind(flight_inpt, select(flight_new,-Fare, -Flight_code, -Date_of_journey, -Duration_in_hours)))
-    prd_n = predict(model, inp[1, ])
+    temp_n = predict(model, newdata=inp)
+    prd_n = as.numeric(temp_n[1])
     prd = append(prd, prd_n)
   }
+  rtn = list(rev(prd[-1]), which.min(rev(prd[-1])))
+  return(rtn)
 }
 
 
@@ -51,17 +57,19 @@ ui <- fluidPage(
     column(5,
            selectInput("depc", h3("Departure City"), 
                        choices = list("Hyderabad", "Bangalore",
-                                      "Ahmedabad", "Chennai", 
-                                      "Delhi", "Mumbai"), selected = 1)),
+                                      "Kolkata", "Chennai", 
+                                      "Delhi", "Mumbai",
+                                      "Ahmedabad"), selected = 1)),
     column(5,
            selectInput("arrc", h3("Arrival City"), 
                        choices = list("Hyderabad", "Bangalore",
-                                                "Ahmedabad", "Chennai", 
-                                                "Delhi", "Mumbai"), selected = 1)),
+                                                "Kolkata", "Chennai", 
+                                                "Delhi", "Mumbai",
+                                                "Ahmedabad"), selected = 1)),
     column(5,
            selectInput("stops", h3("Number of Stops"), 
                        choices = list("Zero" = 0, "One" = 1, "Two" = 2
-                                      ), selected = 1)),
+                                      ), selected = 0)),
     column(5,
            selectInput("airline", h3("Airline"), 
                        choices = list("Air India", "Indigo",
@@ -109,9 +117,14 @@ server <- function(input, output) {
     date_inp <- reactive((input$date))
     aaj <- as.Date(today())
     days_left <- as.numeric(difftime(((date_inp())),aaj))
+    Journey_day = strftime(input$date,"%A")
     cat(input$airline, input$depc,input$arrc, input$date, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
-    pred = flightPricePredict(input$airline, input$depc,input$arrc, input$date, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
-    pred = "Swim and go bro"  #test output line
+    #cat(Journey_day, "---------")
+    #cat(aaj)
+    #pred = flightPricePredict(input$airline, input$depc,input$arrc, Journey_day, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
+    pred = flightPricePredict(input$airline, input$depc, input$arrc, Journey_day, days_left, input$seat_class, as.numeric(input$stops),   input$arrtime, input$deptime)
+    #pred = flightPricePredict("SpiceJet",  "Kolkata", "Hyderabad",   "Monday",       15,       "Economy",         0,       "Before 6 AM", "6 AM - 12 PM") 
+    #pred = "Swim and go bro"  #test output line
     output$prediction <- renderText({paste("the price is cheapest at", pred)}) 
   })
 }

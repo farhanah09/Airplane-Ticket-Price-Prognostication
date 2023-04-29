@@ -272,8 +272,8 @@ postResample(y_test, predicted)
 #Defining predictor and response variables
 head(flight_new)
 y = flight_new$Fare
-x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Source, -Destination, -Date_of_journey)))
-
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Source, -Destination, -Date_of_journey, -Duration_in_hours)))
+head(x)
 #Splitting data
 index = sample(nrow(x), floor(0.7 * nrow(x)))
 x_train = x[index, ]
@@ -297,13 +297,15 @@ residuals = predicted - y_test
 plot(y_test,residuals)
 #Evaluation metrics
 postResample(y_test, predicted)
+head(x_test)
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
 unique(flight_new$Airline)
-head(flight_new)
+#head(flight_new)
 unique(flight_new$Class)
 unique(flight_new$Arrival)
+unique(flight_new$Destination)
 
 ```
 ```{r}
