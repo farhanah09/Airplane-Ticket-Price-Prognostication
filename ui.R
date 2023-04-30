@@ -220,6 +220,7 @@ ui <- fluidPage(
       #   textOutput("deptime"),
       #   textOutput("arrtime")
       textOutput("prediction"),
+      textOutput("prediction1"),
       plotOutput("price_plot")
     )
   )
@@ -262,7 +263,11 @@ server <- function(input, output) {
     #pred = "Swim and go bro"  #test output line
     output$prediction <-
       renderText({
-        paste("the price is cheapest at", abs(which.min(rev(pred[-1]))- length(pred)))
+        paste("the price is", abs(min(rev(pred[-1]))- length(pred)))
+      })
+    output$prediction1 <-
+      renderText({
+        paste("which is on day number", abs(which.min(rev(pred[-1]))- length(pred)))
       })
     output$price_plot <- renderPlot({
       barplot(pred, xlab = "number of days", ylab = "price",col = "darkred")
