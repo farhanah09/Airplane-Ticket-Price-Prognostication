@@ -38,8 +38,14 @@ flightPricePredict <- function(Airline, Source, Destination, Journey_day, Days_l
   }
   rtn = list(rev(prd[-1]))
   rtnmin = which.min(rev(prd[-1]))
-  return(rtnmin)
-  return(plot(rtn, len(rtn)))
+  len_rtn = length((rtn))
+  #plot_final = plot(unlist(rtn), len_rtn)
+  
+  #return(rtnmin)
+  x1 <- rnorm(1000)
+  y1 <- x1 + rnorm(1000)
+  test_plot_data = list(x=x1, y=y1)
+  return(test_plot_data)
 }
 
 
@@ -107,7 +113,8 @@ ui <- fluidPage(
     #   textOutput("class"),
     #   textOutput("deptime"),
     #   textOutput("arrtime")
-      textOutput("prediction")
+      textOutput("prediction"),
+      plotOutput("price_plot")
     )
   )
 )
@@ -127,7 +134,8 @@ server <- function(input, output) {
     pred = flightPricePredict(input$airline, input$depc, input$arrc, Journey_day, days_left, input$seat_class, as.numeric(input$stops),   input$arrtime, input$deptime)
     #pred = flightPricePredict("SpiceJet",  "Kolkata", "Hyderabad",   "Monday",       15,       "Economy",         0,       "Before 6 AM", "6 AM - 12 PM") 
     #pred = "Swim and go bro"  #test output line
-    output$prediction <- renderText({paste("the price is cheapest at", pred)}) 
+    #output$prediction <- renderText({paste("the price is cheapest at", pred)})
+    output$price_plot <- renderPlot({plot(pred$x,pred$y)})
 })
 }
 
