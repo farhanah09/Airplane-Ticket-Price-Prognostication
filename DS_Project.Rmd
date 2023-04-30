@@ -272,7 +272,7 @@ postResample(y_test, predicted)
 #Defining predictor and response variables
 head(flight_new)
 y = flight_new$Fare
-x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Source, -Destination, -Date_of_journey, -Duration_in_hours)))
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey, -Duration_in_hours)))
 head(x)
 #Splitting data
 index = sample(nrow(x), floor(0.7 * nrow(x)))
@@ -281,7 +281,7 @@ y_train = y[index]
 x_test = x[-index, ]
 y_test = y[-index]
 
-classifier_RF = randomForest(x = x_train, y = y_train, ntree = 25, do.trace=TRUE)
+classifier_RF = randomForest(x = x_train, y = y_train, ntree = 10, do.trace=TRUE)
 classifier_RF
 
 predicted = predict(classifier_RF, x_test)
@@ -304,7 +304,7 @@ head(x_test)
 #Defining predictor and response variables
 head(flight_new)
 y = flight_new$Fare
-x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -Source, -Destination, -Date_of_journey, -Duration_in_hours)))
+x = model.matrix( ~ ., data =(select(flight_new,-Fare, -Flight_code, -sector, -Date_of_journey, -Duration_in_hours)))
 head(x)
 #Splitting data
 index = sample(nrow(x), floor(0.7 * nrow(x)))
@@ -321,15 +321,32 @@ residuals = predicted - y_test
 plot(y_test,residuals)
 #Evaluation metrics
 postResample(y_test, predicted)
-saveRDS(classifier_RF, file = "model_file_Random_Forest_25.rds")
+saveRDS(classifier_RF, file = "model_file_Random_Forest_25_1.rds")
 
-model <- readRDS("model_file_Random_Forest_25.rds")
+model <- readRDS("model_file_Random_Forest_25_1.rds")
 predicted = predict(model, x_test)
 residuals = predicted - y_test
 plot(y_test,residuals)
 #Evaluation metrics
 postResample(y_test, predicted)
 head(x_test)
+
+```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 8}
+library(randomForestExplainer)
+
+model <- readRDS("model_file_Random_Forest_25_1.rds")
+predicted = predict(model, x_test)
+residuals = predicted - y_test
+plot(y_test,residuals)
+#Evaluation metrics
+postResample(y_test, predicted)
+
+plot(model)
+
+varImpPlot(model) 
+
 ```
 
 ```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 3}
