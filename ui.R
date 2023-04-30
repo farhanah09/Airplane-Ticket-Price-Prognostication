@@ -101,7 +101,6 @@ flightPricePredict <-
     
     
     return(prd) #the list of prices
-    return(rtmin) #the index at which the price is least
   }
 
 
@@ -263,10 +262,10 @@ server <- function(input, output) {
     #pred = "Swim and go bro"  #test output line
     output$prediction <-
       renderText({
-        paste("the price is cheapest at", pred)
+        paste("the price is cheapest at", abs(which.min(rev(pred[-1]))- length(pred)))
       })
     output$price_plot <- renderPlot({
-      hist(pred, xlab = "price", ylab = "number of days")
+      barplot(pred, xlab = "number of days", ylab = "price",col = "darkred")
     })
   })
 }
