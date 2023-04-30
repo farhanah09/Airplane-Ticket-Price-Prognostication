@@ -45,7 +45,7 @@ flightPricePredict <-
       Departure
     )
     
-    model <- readRDS("model_file_Random_Forest.rds")
+    model <- readRDS("model_file_Random_Forest_25_1.rds")
     flight_inpt = data.frame(
       Journey_day,
       Airline,
