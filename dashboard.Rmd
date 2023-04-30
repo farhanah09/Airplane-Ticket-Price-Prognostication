@@ -1,0 +1,37 @@
+---
+title: "Untitled"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(ggplot2)
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+plot(diamonds$carat, diamonds$cut)
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+plot(diamonds$color, diamonds$x)
+```
+
+### Chart C
+
+```{r}
+plot(diamonds$depth, diamonds$clarity)
+```
+
