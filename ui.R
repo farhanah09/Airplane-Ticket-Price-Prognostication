@@ -36,8 +36,10 @@ flightPricePredict <- function(Airline, Source, Destination, Journey_day, Days_l
     prd_n = as.numeric(temp_n[1])
     prd = append(prd, prd_n)
   }
-  rtn = list(rev(prd[-1]), which.min(rev(prd[-1])))
-  return(rtn)
+  rtn = list(rev(prd[-1]))
+  rtnmin = which.min(rev(prd[-1]))
+  return(rtnmin)
+  return(plot(rtn, len(rtn)))
 }
 
 
@@ -51,7 +53,7 @@ ui <- fluidPage(
   ),
   titlePanel(em(h1("Flight Price Predictinator", align = "center"))),
   mainPanel(
-    img(src = "img/flight.png", height = 140, width = 400), align = "center"), 
+    img(src = "img/flight.png", height = 140, width = 250)), 
   fluidRow(
     
     column(5,
@@ -126,7 +128,7 @@ server <- function(input, output) {
     #pred = flightPricePredict("SpiceJet",  "Kolkata", "Hyderabad",   "Monday",       15,       "Economy",         0,       "Before 6 AM", "6 AM - 12 PM") 
     #pred = "Swim and go bro"  #test output line
     output$prediction <- renderText({paste("the price is cheapest at", pred)}) 
-  })
+})
 }
 
 # Run the app ----
