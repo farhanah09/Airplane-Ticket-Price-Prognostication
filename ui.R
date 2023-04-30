@@ -267,7 +267,7 @@ server <- function(input, output) {
       })
     output$prediction1 <-
       renderText({
-        paste("which is on day number", abs(which.min(rev(pred[-1]))- length(pred)))
+        paste("which is on day number", abs(which.min(rev(pred[-1]))- length(pred))+1)
       })
     output$price_plot <- renderPlot({
       barplot(pred, xlab = "number of days", ylab = "price",col = "darkred")
