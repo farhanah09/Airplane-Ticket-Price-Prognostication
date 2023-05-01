@@ -283,7 +283,7 @@ server <- function(input, output) {
     }
     cat(point_labels)
     output$price_plot <- renderPlot({
-      plot(pred, type = "o", xlab = "Number of days", ylab = "Price",col = "darkred", main = "Expected price variation until day of flight", xaxt = "n")
+      plot(pred, type = "o", xlab = "Days until Flight", ylab = "Price",col = "darkred", main = "Expected price variation in INR until day of flight", xaxt = "n")
       axis(1,at = 1:length(pred) ,labels = x_labels)
       text(pred+25, labels = point_labels)
     })
