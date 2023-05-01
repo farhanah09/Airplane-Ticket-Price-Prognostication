@@ -234,20 +234,8 @@ server <- function(input, output) {
     days_left <- as.numeric(difftime(((date_inp(
     ))), aaj))
     Journey_day = strftime(input$date, "%A")
-    cat(
-      input$airline,
-      input$depc,
-      input$arrc,
-      input$date,
-      days_left,
-      input$seat_class,
-      input$stops,
-      input$arrtime,
-      input$deptime
-    )
-    #cat(Journey_day, "---------")
-    #cat(aaj)
-    #pred = flightPricePredict(input$airline, input$depc,input$arrc, Journey_day, days_left, input$seat_class, input$stops, input$arrtime, input$deptime)
+    
+    
     pred = flightPricePredict(
       input$airline,
       input$depc,
@@ -259,29 +247,29 @@ server <- function(input, output) {
       input$arrtime,
       input$deptime
     )
-    #pred = flightPricePredict("SpiceJet",  "Kolkata", "Hyderabad",   "Monday",       15,       "Economy",         0,       "Before 6 AM", "6 AM - 12 PM")
-    #pred = "Swim and go bro"  #test output line
+    pred <- pred[-1]
+    
     output$prediction <-
       renderText({
-        paste("The lowest expected price in INR is", round(abs(min(rev(pred[-1]))- length(pred))))
+        paste("The lowest expected price in INR is", round(abs(min((pred)))))
       })
     output$prediction1 <-
       renderText({
-        #paste("which is on day number", abs(which.min(rev(pred[-1]))- length(pred))+1)
-        paste("which is on", format(aaj+abs(which.min(rev(pred[-1]))- length(pred))+1, format = "%A, %B %d %Y"))
+        paste("which is on", format(aaj+abs(which.min(pred)), format = "%A, %B %d %Y"))
       })
+    
     #Dynamic labeling for line graph points
     loopi <- 0
     point_labels = vector()
     x_labels = vector()
+    
     for (pp in pred) {
       curr_date = format(aaj+loopi, format = "%a %B %d")
       x_labels <- append(x_labels, curr_date) #Recreating x-axis labels
       point_labels <- append(point_labels,round(pp))
-      #cat(paste(curr_date,(round(pp))))
       loopi <- loopi + 1
     }
-    cat(point_labels)
+    
     output$price_plot <- renderPlot({
       plot(pred, type = "o", xlab = "Days until Flight", ylab = "Price in INR",col = "darkred", main = "Expected price variation in INR until day of flight", xaxt = "n")
       axis(1,at = 1:length(pred) ,labels = x_labels)
