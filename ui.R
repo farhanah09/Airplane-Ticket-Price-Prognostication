@@ -247,7 +247,7 @@ server <- function(input, output) {
       input$arrtime,
       input$deptime
     )
-    pred <- pred[-1]
+    pred <- rev(pred[-1])
     
     output$prediction <-
       renderText({
@@ -259,7 +259,7 @@ server <- function(input, output) {
       })
     
     #Dynamic labeling for line graph points
-    loopi <- 0
+    loopi <- 1
     point_labels = vector()
     x_labels = vector()
     
@@ -273,7 +273,7 @@ server <- function(input, output) {
     output$price_plot <- renderPlot({
       plot(pred, type = "o", xlab = "Days until Flight", ylab = "Price in INR",col = "darkred", main = "Expected price variation in INR until day of flight", xaxt = "n")
       axis(1,at = 1:length(pred) ,labels = x_labels)
-      text(pred+25, labels = point_labels)
+      text(pred-25, labels = point_labels)
     })
   })
 }
