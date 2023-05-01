@@ -333,7 +333,7 @@ head(x_test)
 
 ```
 
-```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 8}
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 4}
 library(randomForestExplainer)
 
 model <- readRDS("model_file_Random_Forest_25_1.rds")
@@ -341,11 +341,13 @@ predicted = predict(model, x_test)
 residuals = predicted - y_test
 plot(y_test,residuals)
 #Evaluation metrics
+model
 postResample(y_test, predicted)
 
 plot(model)
 
 varImpPlot(model) 
+
 
 ```
 
@@ -393,5 +395,59 @@ flightPricePredict <- function(Airline, Source, Destination, Flight_date, Days_l
   return(prd)
 }
 flightPricePredict("SpiceJet", "Delhi", "Mumbai", as.Date("11/02/22"), 5, "Economy", 0, "Before 6 AM", "6 AM - 12 PM") 
+
+```
+
+```{r, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 5}
+flight_new %>% 
+  ggplot () +
+  geom_bar(mapping = aes(x=Airline))
+
+flight_new %>% 
+  ggplot () +
+  geom_bar(mapping = aes(x=Class))
+
+flight_new %>% 
+  ggplot () +
+  geom_bar(mapping = aes(x=Journey_day))
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Journey_day, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Days_left, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Airline, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Departure, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Arrival, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Source, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Destination, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Class, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=Total_stops, y=Fare),stat = "summary", fun = "mean")
+
+ggplot (data = flight_new) +
+  geom_bar(mapping = aes(x=sector, y=Fare),stat = "summary", fun = "mean")+
+  theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
+
+
+ggplot (data = flight_new) +
+  geom_point(mapping = aes(x=Duration_in_hours, y=Fare)) +
+  labs(y= "Price in INR", x="Flight duration") +
+  geom_smooth(mapping = aes(x=Duration_in_hours, y=Fare))
+
+
 
 ```
