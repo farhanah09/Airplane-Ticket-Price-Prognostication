@@ -225,7 +225,7 @@ ui <- fluidPage(
     )
   )
 )
-
+    
 # Define server logic ----
 server <- function(input, output) {
   observeEvent(input$submit, {
@@ -270,8 +270,22 @@ server <- function(input, output) {
         #paste("which is on day number", abs(which.min(rev(pred[-1]))- length(pred))+1)
         paste("which is on", format(aaj+abs(which.min(rev(pred[-1]))- length(pred))+1, format = "%A, %B %d %Y"))
       })
+    #Dynamic labeling for line graph points
+    loopi <- 0
+    point_labels = vector()
+    x_labels = vector()
+    for (pp in pred) {
+      curr_date = format(aaj+loopi, format = "%a %B %d")
+      x_labels <- append(x_labels, curr_date) #Recreating x-axis labels
+      point_labels <- append(point_labels,round(pp))
+      #cat(paste(curr_date,(round(pp))))
+      loopi <- loopi + 1
+    }
+    cat(point_labels)
     output$price_plot <- renderPlot({
-      barplot(pred, xlab = "Number of days", ylab = "Price",col = "darkred")
+      plot(pred, type = "o", xlab = "Number of days", ylab = "Price",col = "darkred", main = "Expected price variation until day of flight", xaxt = "n")
+      axis(1,at = 1:length(pred) ,labels = x_labels)
+      text(pred+25, labels = point_labels)
     })
   })
 }
