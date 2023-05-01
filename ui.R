@@ -263,11 +263,12 @@ server <- function(input, output) {
     #pred = "Swim and go bro"  #test output line
     output$prediction <-
       renderText({
-        paste("The lowest expected price is", abs(min(rev(pred[-1]))- length(pred)))
+        paste("The lowest expected price in INR is", round(abs(min(rev(pred[-1]))- length(pred))))
       })
     output$prediction1 <-
       renderText({
-        paste("which is on day number", abs(which.min(rev(pred[-1]))- length(pred))+1)
+        #paste("which is on day number", abs(which.min(rev(pred[-1]))- length(pred))+1)
+        paste("which is on day number", aaj+abs(which.min(rev(pred[-1]))- length(pred))+1)
       })
     output$price_plot <- renderPlot({
       barplot(pred, xlab = "Number of days", ylab = "Price",col = "darkred")
