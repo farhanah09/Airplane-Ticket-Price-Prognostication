@@ -203,7 +203,7 @@ ui <- fluidPage(
     column(5,
            dateInput(
              "date",
-             h3("Select Date"),
+             h3("Select Departure Date"),
              min = as.Date(today()),
              max = NULL,
            )),
