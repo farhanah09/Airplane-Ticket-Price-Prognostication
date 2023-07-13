@@ -1,0 +1,31 @@
+# Flight-Price-Prediction-Data-Science-R
+
+The goal of the study is to analyze the flight booking dataset received from the "Ease My Trip" website and run various statistical hypothesis tests to analyze the following research questions: 
+How does price vary across Airlines?
+How does the ticket price vary between Economy and Business class?
+Does ticket price change depending on the departure time and arrival time?
+How does the ticket price vary closer to the departure dates?
+Is the ticket price influenced by Source and Destination?
+
+Data Sources
+Data was collected from the “Ease My Trip” website which contains information of flight travel between India’s top 6 metro cities.  A total of 300261 distinct flight booking options were extracted from the site for 50 days, from February 11th to March 31st, 2022. There were two parts to the dataset: economy class tickets and business class tickets. 
+
+
+Data Quality and Transformations
+The data looks in order and has no missingness. There was no data cleaning required. For our data analysis, we merged the two parts of the collected data to create one dataset with 11 features.  There were two transformations made to the features - (1) Date was in character format and was transformed to as.Date() to convert to Day of the Week and (2) Time of Departure was in character format and was transformed to Lubridate Time format.
+Initial Exploratory Data Analysis
+<img width="482" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/43dc59aa-83dc-4f34-a268-81ca5a20b680">
+
+
+In our project, we will be plotting the following features as part of our initial exploratory analysis:
+Duration vs Price (economy and business)
+Departure Time vs Price (economy and business)
+Distribution of duration by airline 
+Days to flight vs price (for different sectors and airlines)
+Price distribution based on the day of the week 
+Distribution of departure time 
+Linear Regression Model
+A variable's value can be predicted using linear regression analysis based on the value of another variable. The dependent variable is the one you want to be able to forecast. The independent variable is the one you're using to make a prediction about the value of the other variable. In our implementation of Linear Regression, our Target Variable (dependent variable) is Price of the ticket. All 11 features will be used to predict the target variable.
+
+Linear Regression Model
+A variable's value can be predicted using linear regression analysis based on the value of another variable. The dependent variable is the one you want to be able to forecast. The independent variable is the one you're using to make a prediction about the value of the other variable. In our implementation of Linear Regression, our Target Variable (dependent variable) is Price of the ticket. All 11 features will be used to predict the target variable.
