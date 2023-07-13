@@ -8,7 +8,7 @@ The goal of the study is to analyze the flight booking dataset received from the
 - Is the ticket price influenced by Source and Destination?
 
 ### Data Sources
-Data was collected from the “Ease My Trip” website, which contains flight travel information between India’s top 6 metro cities.  A total of 300261 distinct flight booking options were extracted from the site for 50 days, from February 11th to March 31st, 2022. There were two parts to the dataset: economy class tickets and business class tickets. 
+The features that we have in the data are Date of Journey, Journey_day, Airline, Flight code, Class, Source city,  Departure time,  Total_stops, Arrival city, Flight Duration, Days Left to Travel and Fare of the Ticket. We will be using this to predict the fare of the flight tickets. Table 1 shows the unique values for the main features and the range of these features.
 
 
 ### Data Quality and Transformations
@@ -16,7 +16,10 @@ The data looks in order and has no missingness. There was no data cleaning requi
 Initial Exploratory Data Analysis
 
 
-<img width="482" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/43dc59aa-83dc-4f34-a268-81ca5a20b680">
+<img width="317" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/fa853c36-dea2-491f-8b29-1034dc6e4804">
+
+It has also been observed that we don’t have a uniform number of datapoints on all airlines and different classes (See Figures A1, A2 and A3 in Appendix). However this might be because some airlines operate more flights and most of the tickets sold are either economy class or premium economy. Hence the prediction for airlines with less data and first class tickets might have higher uncertainty. It is also seen that the number of flights is more or less the same on each day of the week. Hence the prediction might have similar uncertainty any day of the week.
+The relation of the ticket fare vs multiple variables in the data was examined to understand the dependence of the fare on these variables. From the plots below, it can be seen that the fare of the ticket depends to a high extent on the days left to the flight, number of stops, the airline, ticket class (economy, business etc.) and departure time. Hence these should be the main elements of the model. Other variables such as, journey day (day of the week), sector, source and destination cities don’t have much effect on the fare
 
 
 ### In our project, we will be plotting the following features as part of our initial exploratory analysis:
@@ -27,20 +30,10 @@ Days to flight vs price (for different sectors and airlines)
 Price distribution is based on the day of the week 
 Distribution of departure time 
 
-### Linear Regression Model
-A variable's value can be predicted using linear regression analysis based on the value of another variable. The dependent variable is the one you want to be able to forecast. The independent variable is the one you're using to make a prediction about the value of the other variable. In our implementation of Linear Regression, our Target Variable (dependent variable) is the Price of the ticket. All 11 features will be used to predict the target variable.
+### Analysis
+#### Model fitting 
+We trained a Random Forest model with 25 trees to predict the price of air tickets based on different features such as departure and arrival locations, departure and arrival times, travel dates, airline carriers, seat class, and number of stops. Initially, we tested a Lasso model to predict the target variable. While the model had a relatively high R-squared value of 0.851, we observed that the plot of residuals displayed a pattern of uneven variance, indicating the presence of outliers or error terms that could potentially impact the model's predictive variability (Figure 2). Despite our efforts to rectify these issues, we could not obtain satisfactory results.
+To overcome these limitations, we switched to a Random Forest model. The R-squared value of the Random Forest model of 0.929 was slightly higher than that of the Lasso model and demonstrated a statistically significant and high predictive ability (Figure 3). This suggests that the Random Forest model is better suited for our data and can provide more reliable predictions.
 
+For more information check the  "DS- Final Report"
 
-<img width="316" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/31acbeb7-3fe1-49ac-b64f-c4a5ec259007">
-
-
-<img width="332" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/8e942d3f-cc18-4cc4-af84-22cc2f815717">
-
-
-<img width="341" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/8a6bf506-5680-4fcc-9047-baad639be829">
-
-
-<img width="316" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/620f4c7d-8640-489f-8340-739e5434d8db">
-
-
-<img width="322" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/50e78217-851a-4cfc-ab9d-5359f8209615">
