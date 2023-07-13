@@ -17,7 +17,7 @@ Initial Exploratory Data Analysis
 
 
 <img width="482" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/43dc59aa-83dc-4f34-a268-81ca5a20b680">
-##### img-1
+#### img-1
 
 ### In our project, we will be plotting the following features as part of our initial exploratory analysis:
 Duration vs Price (economy and business)
@@ -32,20 +32,20 @@ A variable's value can be predicted using linear regression analysis based on th
 
 
 <img width="316" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/31acbeb7-3fe1-49ac-b64f-c4a5ec259007">
-##### img-2
+#### img-2
 
 
 <img width="332" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/8e942d3f-cc18-4cc4-af84-22cc2f815717">
-##### img-3
+#### img-3
 
 
 <img width="341" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/8a6bf506-5680-4fcc-9047-baad639be829">
-##### img-4
+#### img-4
 
 
 <img width="316" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/620f4c7d-8640-489f-8340-739e5434d8db">
-##### img-5
+#### img-5
 
 
 <img width="322" alt="image" src="https://github.com/farhanah09/Flight-Price-Prediction-Data-Science-R/assets/127971208/50e78217-851a-4cfc-ab9d-5359f8209615">
-##### img-6
+#### img-6
