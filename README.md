@@ -1,3 +1,5 @@
+<a href="https://app.commanddash.io/agent?github=https://github.com/farhanah09/Airplane-Ticket-Price-Prognostication"><img src="https://img.shields.io/badge/AI-Code%20Gen-EB9FDA"></a>
+
 # Flight-Price-Prediction-Data-Science-R
 
 The goal of the study is to analyze the flight booking dataset received from the "Ease My Trip" website and run various statistical hypothesis tests to analyze the following research questions: 
